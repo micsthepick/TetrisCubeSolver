@@ -1,11 +1,18 @@
 # some prerequisite definitions for the Tetris cube solver.
-from itertools import izip, product
+from itertools import product
+try:
+    from itertools import izip as zip
+except ImportError:
+    pass
+
 
 def count(var):
     return range(len(var))
 
 # A function that returns a new piece, with the dimensions of the input piece
 # plotted to the axes inputted in the order stated in negatives list input
+
+
 def transform(piece, axes, negatives):
     hl = len(piece)
     rl = len(piece[0])
@@ -16,7 +23,7 @@ def transform(piece, axes, negatives):
     for h in range(dim[hn]):
         new.append([])
         for r in range(dim[rn]):
-            new[-1].append('')          
+            new[-1].append('')
     nAxes = []
     axesI = [0] * 3
     for i in range(3):
@@ -26,12 +33,14 @@ def transform(piece, axes, negatives):
         else:
             nAxes.append(range(dim[axes[i]] - 1, -1, -1))
     hi, ri, ci = axesI
-    for a, b in izip(product(range(dim[hn]), range(dim[rn]), range(dim[cn])),
+    for a, b in zip(product(range(dim[hn]), range(dim[rn]), range(dim[cn])),
                      product(*nAxes)):
         new[a[0]][a[1]] += str(piece[b[hi]][b[ri]][b[ci]])
     return new
 
 # check if a 3D piece is contained in a list or not
+
+
 def check(piece, array):
     for prev in array:
         if len(piece) != len(prev):
@@ -46,6 +55,8 @@ def check(piece, array):
     return True
 
 # function to print a 3D array
+
+
 def print3D(array):
     text = ''
     for r in count(array[0]):
