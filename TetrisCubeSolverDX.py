@@ -3,11 +3,10 @@ from __future__ import absolute_import, print_function
 from TetrisC import transform, check
 from itertools import product, permutations
 from tqdm import tqdm
-try:
-    range = xrange
-except NameError:
-    pass
-from time import time
+import datetime
+from time import time_ns
+if 'xrange' in globals():
+    range = globals()['xrange']
 
 # depends on Algorithm-x
 # (an implementation by github.com/SuprDewd
@@ -123,19 +122,20 @@ for p_i, piece in enumerate(orientations):
                     # link to last
                     # data = (index, piece id, orientation id)
                     # TODO: may want to change this to just index?
-                    row.append(get_wrapped_index(h+x, r+y, c+z))
+                    row.append(get_wrapped_index(h + x, r + y, c + z))
             piece_l.append(row)
     piece_rows.append(piece_l)
 
 solver = AlgorithmX(bcells + len(pieces))
 for i, piece_placements in enumerate(piece_rows):
     for piece_placement in piece_placements:
-        solver.appendRow(piece_placement + [i+bcells], piece_placement)
+        solver.appendRow(piece_placement + [i + bcells], piece_placement)
 
 with open('tcsDXsolutions.txt', 'w') as f:
-    start = time()
+    start = time_ns()
     for i, solution in tqdm(enumerate(solver.solve()), unit=' sols'):
         print(solution, file=f)
-    print('Solutions found:', i+1)
-    print('Time:', time() - start)
-    print('Solutions per second:', i+1 / (time() - start))
+    print(
+        '\nTime:',
+        datetime.timedelta(milliseconds=(time_ns() - start) // 1000000)
+    )
