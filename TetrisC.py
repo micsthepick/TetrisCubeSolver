@@ -24,19 +24,17 @@ def transform(piece, axes, negatives):
         new.append([])
         for r in range(dim[rn]):
             new[-1].append('')
-    num_axes = []
-    axes_indices = [0] * 3
+    nAxes = []
+    axesI = [0] * 3
     for i in range(3):
-        axes_indices[axes[i]] = i
+        axesI[axes[i]] = i
         if negatives[i] == 0:
-            num_axes.append(range(dim[axes[i]]))
+            nAxes.append(range(dim[axes[i]]))
         else:
-            num_axes.append(range(dim[axes[i]] - 1, -1, -1))
-    hi, ri, ci = axes_indices
-    for a, b in zip(
-        product(range(dim[hn]), range(dim[rn]), range(dim[cn])),
-        product(*num_axes)
-    ):
+            nAxes.append(range(dim[axes[i]] - 1, -1, -1))
+    hi, ri, ci = axesI
+    for a, b in zip(product(range(dim[hn]), range(dim[rn]), range(dim[cn])),
+                     product(*nAxes)):
         new[a[0]][a[1]] += str(piece[b[hi]][b[ri]][b[ci]])
     return new
 
@@ -59,7 +57,7 @@ def check(piece, array):
 # function to print a 3D array
 
 
-def print_3d(array):
+def print3D(array):
     text = ''
     for r in count(array[0]):
         for h in count(array):
@@ -69,3 +67,4 @@ def print_3d(array):
         text += '\n'
     text = text[:-2]
     return text
+

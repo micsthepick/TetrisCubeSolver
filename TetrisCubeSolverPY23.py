@@ -1,15 +1,41 @@
 # Tetris cube solver in python by Michael Pannekoek
-from itertools import izip, product, permutations
+from __future__ import absolute_import
+from __future__ import print_function
+from itertools import product, permutations
 import profile
+from time import perf_counter as clock
+from six.moves import range
 
-out = open('TetrisSolutions.txt', 'w')
+lasttime = clock()
+
+def lap():
+    global lasttime
+    newtime = clock()
+    lasttime, newtime = newtime, newtime - lasttime
+    return newtime
+
+out = open('TetrisSolutions-1.txt', 'w')
 
 # board dimensions
-bheight = 4
-brows = 4
-bcols = 4
+bheight = 3
+brows = 2
+bcols = 2
 
 pieces = [
+          [['111',
+            '11.']],
+
+  
+          [['1.',
+            '..'],
+
+           ['11',
+            '11']],
+
+          [['11']]
+]
+
+'''[
           # 0
           [['1..',
             '1..',
@@ -103,10 +129,10 @@ pieces = [
             '..'],
 
            ['11',
-            '11']]]
+            '11']]]'''
 
 def count(var):
-    return range(len(var))
+    return list(range(len(var)))
 
 # A function that returns a new piece, with the dimensions of the input piece
 # plotted to the axes inputted in the order stated in negatives list input
@@ -126,11 +152,11 @@ def transform(piece, axes, negatives):
     for i in range(3):
         axesI[axes[i]] = i
         if negatives[i] == 0:
-            nAxes.append(range(dim[axes[i]]))
+            nAxes.append(list(range(dim[axes[i]])))
         else:
-            nAxes.append(range(dim[axes[i]] - 1, -1, -1))
+            nAxes.append(list(range(dim[axes[i]] - 1, -1, -1)))
     hi, ri, ci = axesI
-    for a, b in izip(product(range(dim[hn]), range(dim[rn]), range(dim[cn])),
+    for a, b in zip(product(list(range(dim[hn])), list(range(dim[rn])), list(range(dim[cn]))),
                      product(*nAxes)):
         new[a[0]][a[1]] += str(piece[b[hi]][b[ri]][b[ci]])
     return new
@@ -150,7 +176,7 @@ def check(piece, array):
     return True
 
 # function to print a 3D array
-def print3D(array, file=None): ### file NIY
+def print3D(array, file=None): ### file is NIY
     text = ''
     for r in count(array[0]):
         for h in count(array):
@@ -158,7 +184,7 @@ def print3D(array, file=None): ### file NIY
                 text += array[h][r][c] + ' '
             text += '   '
         text += '\n'
-    text = text[:-2]
+    text += '\n'
     return text
 
 orientations = []
@@ -166,8 +192,21 @@ orientations = []
 # find all different piece orientations
 for piece in pieces:
     nextPiece = []
-    for perm in permutations(range(3)):
-        if perm[0] - perm[1] in [-1, 2]:
+    for perm in permutations(list(range(3))):
+        if perm[1] - perm[0] in [-1, 2]:
+             # all negative in order
+            negatives = [1] * 3
+            orientation = transform(piece, perm, negatives)
+            if not check(orientation, nextPiece):
+                nextPiece.append(orientation)
+            for i in range(3):
+                # all positive except i
+                negatives = [0] * 3
+                negatives[i] = 1
+                orientation = transform(piece, perm, negatives)
+                if not check(orientation, nextPiece):
+                    nextPiece.append(orientation)
+        else:
             # all positive in order
             negatives = [0] * 3
             orientation = transform(piece, perm, negatives)
@@ -177,19 +216,6 @@ for piece in pieces:
                 # all negative except i
                 negatives = [1] * 3
                 negatives[i] = 0
-                orientation = transform(piece, perm, negatives)
-                if not check(orientation, nextPiece):
-                    nextPiece.append(orientation)
-        else:
-            # all negative in order
-            negatives = [1] * 3
-            orientation = transform(piece, perm, negatives)
-            if not check(orientation, nextPiece):
-                nextPiece.append(orientation)
-            for i in range(3):
-                # all positive except i
-                negatives = [0] * 3
-                negatives[i] = 1
                 orientation = transform(piece, perm, negatives)
                 if not check(orientation, nextPiece):
                     nextPiece.append(orientation)
@@ -248,7 +274,7 @@ def removeLast():
 # the list if it isnt.
 def newSolution():
     # go through each possible orientations, and stop at a duplicate
-    for perm in permutations(range(3)):
+    for perm in permutations(list(range(3))):
         if perm[0] - perm[1] in [-1, 2]:
             # all positive in order
             negatives = [0] * 3
@@ -280,7 +306,7 @@ def checkGaps():
     global checked
     checked = set()
     # go thorugh each unchecked position and check how large the gap is
-    for h, r, c in product(range(bheight), range(brows), range(bcols)):
+    for h, r, c in product(list(range(bheight)), list(range(brows)), list(range(bcols))):
         if checkCoordinates(h, r, c):
             if floodCheck(h, r, c) < 5:
                 # if the gap is too small, return True
@@ -321,17 +347,18 @@ solutions = []
 # function that runs through every piece, orientation and position
 # adding one piece at a time and removing 
 def piece(p):
+    print(p)
     for o in count(orientations[p]):
         orient = orientations[p][o]
         hl, rl, cl = len(orient), len(orient[0]), len(orient[0][0])
-        for h, r, c in product(range(bheight-hl+1), range(brows-rl+1),
-                               range(bcols-cl+1)):
+        for h, r, c in product(list(range(bheight-hl+1)), list(range(brows-rl+1)),
+                               list(range(bcols-cl+1))):
             if add(p, o, h, r, c):
-                ###print print3D(values)
                 if p == 11:
                     solutions.append(values)
-                    print 'Found a solution! - ' + str(len(solutions))
-                    print print3D(solutions[-1])
+                    print('Found a solution! - ' + str(len(solutions)))
+                    print(print3D(solutions[-1]))
+                    print('Interval:', lap())
                         
 ##                    if newSolution():
 ##                        solutions.append(values)
@@ -349,3 +376,4 @@ def piece(p):
 
 # start solving
 piece(0)
+
