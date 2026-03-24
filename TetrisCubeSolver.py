@@ -11,16 +11,16 @@ pieces = [# 0
           [['1..',
             '1..',
             '111'],
-           
+
            ['...',
             '1..',
             '...']],
-          
+
           # 1
           [['1..',
             '1..',
             '111'],
-           
+
            ['1..',
             '...',
             '...']],
@@ -29,43 +29,43 @@ pieces = [# 0
           [['11.',
             '.11',
             '.1.'],
-           
+
            ['1..',
             '...',
             '...']],
-          
+
           # 3
           [['.1.',
             '...'],
-           
+
            ['111',
             '.1.'],
-           
+
            ['...',
             '.1.']],
-          
+
           # 4
           [['.1',
             '11',
             '.1',
             '.1']],
-          
+
           # 5
           [['1.',
             '11',
             '.1',
             '.1']],
-          
+
           # 6
           [['1..',
             '1..',
             '111']],
-          
+
           # 7
           [['1.',
             '11',
             '..'],
-           
+
            ['..',
             '.1',
             '.1']],
@@ -73,7 +73,7 @@ pieces = [# 0
           # 8
           [['.1.',
             '...'],
-           
+
            ['.1.',
             '111']],
 
@@ -81,7 +81,7 @@ pieces = [# 0
           [['11',
             '1.',
             '1.'],
-           
+
            ['.1',
             '..',
             '..']],
@@ -90,7 +90,7 @@ pieces = [# 0
           [['1.',
             '11',
             '.1'],
-           
+
            ['..',
             '..',
             '.1']],
@@ -271,12 +271,12 @@ def piece(p):
                 if p == 11:
                     if newSolution():
                         solutions.append(values)
-                        print 'Found new solution! - ' + str(len(solutions))
-                        print print3D(solutions[-1])
+                        print('Found new solution! - ' + str(len(solutions)))
+                        print(print3D(solutions[-1]))
                     else:
                         solutions.append(values)
-                        print 'Found a duplicate solution.- ' + str(len(solutions))
-                        print print3D(solutions[-1])
+                        print('Found a duplicate solution.- ' + str(len(solutions)))
+                        print(print3D(solutions[-1]))
                     removeLast()
                 else:
 

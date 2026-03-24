@@ -1,111 +1,104 @@
 # Tetris cube solver - uncompilable version
-from __future__ import print_function
-from itertools import product, permutations
-try:
-    from itertools import izip as zip
-except ImportError:
-    pass
+from itertools import product, permutations, izip
 
 # board dimensions
 bheight = 4
 brows = 4
 bcols = 4
 
-pieces = [
-    # 0
-    [['1.',
-      '..'],
+pieces = [# 0
+          [['1.',
+            '..'],
 
-     ['11',
-      '11']],
+           ['11',
+            '11']],
+          
+          # 1
+          [['1..',
+            '1..',
+            '111']],
 
-    # 1
-    [['1..',
-      '1..',
-      '111']],
+          # 2
+          [['.1',
+            '11',
+            '.1',
+            '.1']],
+          
+          # 3
+          [['1.',
+            '11',
+            '.1',
+            '.1']],
+          
+          # 4
+          [['1..',
+            '1..',
+            '111'],
+           
+           ['...',
+            '1..',
+            '...']],
+          
+          # 5
+          [['1..',
+            '1..',
+            '111'],
+           
+           ['1..',
+            '...',
+            '...']],
+          # 6
+          [['.1.',
+            '...'],
+           
+           ['.1.',
+            '111']],
+          
+          # 7
+          [['.1.',
+            '...'],
+           
+           ['111',
+            '.1.'],
+           
+           ['...',
+            '.1.']],
 
-    # 2
-    [['.1',
-      '11',
-      '.1',
-      '.1']],
+          # 8
+          [['.1',
+            '11',
+            '..'],
+           
+           ['..',
+            '1.',
+            '1.']],
 
-    # 3
-    [['1.',
-      '11',
-      '.1',
-      '.1']],
+          # 9
+          [['11',
+            '.1',
+            '..'],
+           
+           ['..',
+            '.1',
+            '.1']],
 
-    # 4
-    [['1..',
-      '1..',
-      '111'],
+          # 10 or A
+          [['1.',
+            '..',
+            '..'],
+           
+           ['11',
+            '.1',
+            '.1']],
 
-     ['...',
-      '1..',
-      '...']],
-
-    # 5
-    [['1..',
-      '1..',
-      '111'],
-
-     ['1..',
-      '...',
-      '...']],
-
-    # 6
-    [['.1.',
-      '...'],
-
-     ['.1.',
-      '111']],
-
-    # 7
-    [['.1.',
-      '...'],
-
-     ['111',
-      '.1.'],
-
-     ['...',
-      '.1.']],
-
-    # 8
-    [['.1',
-      '11',
-      '..'],
-
-     ['..',
-      '1.',
-      '1.']],
-
-    # 9
-    [['11',
-      '.1',
-      '..'],
-
-     ['..',
-      '.1',
-      '.1']],
-
-    # 10 or A
-    [['1.',
-      '..',
-      '..'],
-
-     ['11',
-      '.1',
-      '.1']],
-
-    # 11 or B
-    [['11.',
-      '.11',
-      '.1.'],
-
-     ['1..',
-      '...',
-      '...']]]
+          # 11 or B
+          [['11.',
+            '.11',
+            '.1.'],
+           
+           ['1..',
+            '...',
+            '...']]]
 
 orientations = []
 
@@ -113,7 +106,6 @@ orientations = []
 # some general declerations
 def count(var):
     return range(len(var))
-
 
 # check if a 3D piece is contained in a list or not
 def check(piece, array):
@@ -131,7 +123,9 @@ def check(piece, array):
 
 
 # function to print a 3D array
-def print_3d(array):
+def print3D(array):
+    ###test if function is called
+    print 'hey'
     text = '\n'
     for h in array:
         for r in h:
@@ -155,21 +149,19 @@ def transform(piece, axes, negatives):
     for h in range(dim[hn]):
         new.append([])
         for r in range(dim[rn]):
-            new[-1].append('')
-    num_axes = []
-    axes_indexes = [0] * 3
+            new[-1].append('')          
+    nAxes = []
+    axesI = [0] * 3
     for i in range(3):
-        axes_indexes[axes[i]] = i
+        axesI[axes[i]] = i
         if negatives[i] == 0:
-            num_axes.append(range(dim[axes[i]]))
+            nAxes.append(range(dim[axes[i]]))
         else:
-            num_axes.append(range(dim[axes[i]] - 1, -1, -1))
-    hi, ri, ci = axes_indexes
-
-    for a, b in zip(
-        product(range(dim[hn]), range(dim[rn]), range(dim[cn])),
-        product(*num_axes)
-    ):
+            nAxes.append(range(dim[axes[i]] - 1, -1, -1))
+    hi, ri, ci = axesI
+    
+    for a, b in izip(product(range(dim[hn]), range(dim[rn]), range(dim[cn])),
+                     product(*nAxes)):
         new[a[0]][a[1]] += str(piece[b[hi]][b[ri]][b[ci]])
     return new
 
@@ -207,7 +199,7 @@ for num in count(pieces):
                     orientations[-1].append(orientation)
 # print results
 for i in count(orientations):
-    print('piece', i, 'has', len(orientations[i]), 'orientations.')
+    print 'piece', i, 'has', len(orientations[i]), 'orientations.'
 
 
 # declerations usefull to test certain placements
@@ -218,12 +210,11 @@ for h in range(bheight):
     for r in range(brows):
         values[-1].append('.' * bcols)
 
-
 def add(p, o, hn, rn, cn):
     # returns True if piece is in a valid position, otherwise  False
     # and in the process adds the piece.
     # first find the piece representation
-    piece = o
+    piece = orientations[p][o]
     # check if piece fits in values
     for h, r, c in product(count(piece), count(piece[0]), count(piece[0][0])):
         if piece[h][r][c] == '1' and values[hn + h][rn + r][cn + c] != '.':
@@ -233,16 +224,15 @@ def add(p, o, hn, rn, cn):
     for h, r, c in product(count(piece), count(piece[0]), count(piece[0][0])):
         if piece[h][r][c] == '1':
             row = values[hn + h][rn + r]
-            values[hn + h][rn + r] = \
-                row[:cn + c] + hex(piece)[2:] + row[cn + c + 1:]
+            values[hn + h][rn + r] = row[:cn + c] + hex(piece)[2:] +\
+            row[cn + c + 1:]
     # check if there are any gaps too small
-    if check_gaps():
-        remove_last()
+    if checkGaps():
+        removeLast()
         return False
     return True
 
-
-def remove_last():
+def removeLast():
     # find the piece properties
     p, o, hn, rn, cn = placements[-1]
     piece = orientations[p][o]
@@ -250,15 +240,14 @@ def remove_last():
     for h, r, c in product(count(piece), count(piece[0]), count(piece[0][0])):
         if piece[h][r][c] == '1':
             row = values[hn + h][rn + r]
-            values[hn + h][rn + r] = \
-                row[:cn + c] + '.' + row[cn + c + 1:]
+            values[hn + h][rn + r] = row[:cn + c] + '.' +\
+            row[cn + c + 1:]
     # then remove from placements list
     del placements[-1]
 
-
 # function to test a solution to see if it is just a duplicate, then add it to
 # the list if it isnt.
-def new_solution():
+def newSolution():
     global values
     global solutions
     # go through each possible orientations, and stop at a duplicate
@@ -307,44 +296,42 @@ def new_solution():
     # stopped loop early because the solution was a duplicate
     return False
 
+                    
 
-def check_gaps():
-    # functions to test empty spaces in order to skip impossible starting positions
+# functions to test empty spaces in order to skip impossible starting positions
+def checkGaps():
     global checked
     checked = []
     # go thorugh each unchecked position and check how large the gap is
     for h, r, c in product(range(bheight), range(brows), range(bcols)):
-        if check_coordinates(r, c) == 0:
-            if flood_check(h, r, c) < 5:
+        if checkCoordinates(r, c) == 0:
+            if floodcheck(h, r, c) < 5:
                 # if the gap is too small, return True
                 return True
     # if none are too small return False
     return False
 
-
-def flood_check(h, r, c):
+def floodCheck(h, r, c):
     checked.append((r, c))
     count = 1
-    if check_coordinates(h + 1, r, c) == 0:
-        count += flood_check(h + 1, r, c)
-    if check_coordinates(h, r + 1, c) == 0:
-        count += flood_check(h, r + 1, c)
-    if check_coordinates(h, r, c + 1) == 0:
-        count += flood_check(h, r, c + 1)
-    if check_coordinates(h, r - 1, c) == 0:
-        count += flood_check(h, r - 1, c)
-    if check_coordinates(h, r, c - 1) == 0:
-        count += flood_check(h, r, c - 1)
-    if check_coordinates(h - 1, r, c) == 0:
-        count += flood_check(h - 1, r, c)
+    if checkCoordinates(h + 1, r, c) == 0:
+        count += floodCheck(h + 1, r, c)
+    if checkCoordinates(h, r + 1, c) == 0:
+        count += floodCheck(h, r + 1, c)
+    if checkCoordinates(h, r, c + 1) == 0:
+        count += floodCheck(h, r, c + 1)
+    if checkCoordinates(h, r - 1, c) == 0:
+        count += floodCheck(h, r - 1, c)
+    if checkCoordinates(h, r, c - 1) == 0:
+        count += floodCheck(h, r, c - 1)
+    if checkCoordinates(h - 1, r, c) == 0:
+        count += floodCheck(h - 1, r, c)
     return count
 
-
 # check wether coordinates have been checked allready or occupied.
-def check_coordinates(h, r, c):
-    # 0 means empty, 1 full or allready checked
-    # if h < 0 or r < 0 or c < 0 or h >= bhieght or r >= brows or c >= bcols:
-    #     return True
+def checkCoordinates(h, r, c): # 0 means empty, 1 full or allready checked
+    #if h < 0 or r < 0 or c < 0 or h >= bhieght or r >= brows or c >= bcols:
+        #return True
     if values[h][r][c] == '.' and not (h, r, c) in checked:
         return False
     else:
@@ -353,25 +340,25 @@ def check_coordinates(h, r, c):
 
 solutions = []
 
-
 # function that runs through every piece, orientation and position
-# adding one piece at a time and removing
+# adding one piece at a time and removing 
 def piece(p):
     global orientations
     for orient in orientations[p]:
-        for h, r, c in product(bheight - len(orient) + 1,
+        for h, r, c in product(hieght - len(orient) + 1,
                                brows - len(orient[0]) + 1,
                                bcols - len(orient[0][0]) + 1):
-            if add(p, orient, h, r, c):
-                # show progress
-                print_3d(values)
+            if add(p, o, h, r, c):
+                ###show progress
+                print3D(values)
                 if piece == 11:
-                    if new_solution():
-                        print('Found new solution! -', len(solutions))
+                    if newSolution():
+                        print 'Found new solution! -', len(solutions)
                     else:
-                        print('Found a duplicate solution.')
-                    print_3d(solutions[-1])
-                    remove_last()
+                        print 'Found a duplicate solution.'
+                    print3D(solutions[-1])
+                    removeLast()
                 else:
                     piece(p + 1)
-                    remove_last()
+                    remove(piece)
+

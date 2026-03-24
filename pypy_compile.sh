@@ -1,0 +1,1 @@
+gcc -pthread -DNDEBUG -O2 -fPIC -I/home/mike/TCS/pypy3_cython/include -I/usr/lib/pypy3/include -c AX.c -o build/temp.lin

@@ -1,9 +1,8 @@
+#cython: language_level=3 profile=True
 # Tetris cube solver in python by Michael Pannekoek
 from __future__ import absolute_import, print_function
 from TetrisC import transform, check
 from itertools import product, permutations
-import numba
-import numpy as np
 from tqdm import tqdm
 try:
     range = xrange
@@ -14,8 +13,8 @@ from time import time
 # depends on Algorithm-x
 # (an implementation by github.com/SuprDewd
 # of Algorithm X by Donald Knuth)
-## added custom optimized implementation using numba
-from algorithm_x import AlgorithmX
+## added custom optimized implementation using cython
+from AXpython import AlgorithmX
 
 
 # board dimensions
@@ -63,7 +62,76 @@ pieces = [
     [['1.', '..'], ['11', '11']]
 ]
 
+"""bheight = 3
+brows = 4
+bcols = 5
+
+bcells = bheight * brows * bcols
+
+pieces = [
+          # 0
+          [['1..',
+            '1..',
+            '111']],
+          
+          # 1
+          [['1..',
+            '11.',
+            '.11']],
+
+          # 2
+          [['11.',
+            '.11',
+            '.1.']],
+          
+          # 3
+          [['.1.',
+            '111',
+            '.1.']],
+          
+          # 4
+          [['.1',
+            '11',
+            '.1',
+            '.1']],
+          
+          # 5
+          [['1.',
+            '11',
+            '.1',
+            '.1']],
+          
+          # 6
+          [['.1.',
+            '.1.',
+            '111']],
+          
+          # 7
+          [['1..',
+            '111',
+            '..1']],
+
+          # 8
+          [['11',
+            '.1',
+            '.1',
+            '.1']],
+
+          # 9
+          [['11',
+            '1.',
+            '11']],
+
+          # 10 or A
+          [['1.',
+            '11',
+            '11']],
+
+          # 11 or B
+          [['11111']]]"""
+
 orientations = [[pieces[0]]]
+#orientations = []
 
 # find all different piece orientations, except for first piece
 # (skip first piece so that it every solution appears in only one orientation)
@@ -133,12 +201,15 @@ for p_i, piece in enumerate(orientations):
 solver = AlgorithmX(bcells + len(pieces))
 for i, piece_placements in enumerate(piece_rows):
     for piece_placement in piece_placements:
-        solver.appendRow(piece_placement + [i+bcells], np.array(piece_placement, dtype=np.int64))
+        solver.appendRow(piece_placement + [i+bcells], str(sorted(piece_placement)))
 
 with open('tcsDXsolutions.txt', 'w') as f:
     start = time()
-    for i, solution in tqdm(enumerate(solver.solve(20)), unit=' sols'):
+    print('started')
+    solcount = 0
+    for solution in tqdm(solver.solve(), unit='soln', smoothing=0):
+        solcount += 1
         print(solution, file=f)
-    print('Solutions found:', i+1)
+    print('Solutions found:', solcount)
     print('Time:', time() - start)
-    print('Solutions per second:', (i+1) / (time() - start))
+    print('Solutions per second:', solcount / (time() - start))
